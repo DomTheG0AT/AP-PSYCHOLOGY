@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AP Psych Study</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --surface2: #1e1e24;
+    --border: #2a2a32;
+    --accent: #7c6bff;
+    --accent2: #ff6b6b;
+    --green: #4ade80;
+    --yellow: #fbbf24;
+    --text: #f0f0f5;
+    --text2: #8888a0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 64px;
+  }
+
+  /* HEADER */
+  header {
+    width: 100%; max-width: 720px;
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; letter-spacing: -0.5px; color: var(--accent); }
+  .logo span { color: var(--text); }
+  .stats-bar { display: flex; gap: 16px; font-size: 13px; color: var(--text2); }
+  .stat { display: flex; align-items: center; gap: 5px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot.green { background: var(--green); }
+  .dot.red { background: var(--accent2); }
+  .dot.gray { background: var(--border); }
+
+  /* MODE SWITCHER */
+  .mode-switcher {
+    width: 100%; max-width: 720px;
+    display: flex; gap: 8px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 4px;
+    margin-bottom: 16px;
+  }
+  .mode-btn {
+    flex: 1; padding: 10px; border-radius: 8px; border: none;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all 0.2s; color: var(--text2); background: transparent;
+  }
+  .mode-btn.active { background: var(--accent); color: #fff; }
+  .mode-btn:hover:not(.active) { color: var(--text); background: var(--surface2); }
+
+  /* UNIT FILTER */
+  .unit-filter {
+    display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+    margin-bottom: 20px; max-width: 720px; width: 100%;
+  }
+  .unit-btn {
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text2); border-radius: 99px; padding: 6px 14px;
+    font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.15s;
+  }
+  .unit-btn:hover { border-color: var(--accent); color: var(--text); }
+  .unit-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  /* PROGRESS BAR */
+  .progress-wrap {
+    width: 100%; max-width: 720px; margin-bottom: 8px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px; color: var(--text2);
+  }
+  .progress-bar {
+    width: 100%; max-width: 720px; height: 4px;
+    background: var(--border); border-radius: 99px; margin-bottom: 24px; overflow: hidden;
+  }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #a78bfa); border-radius: 99px; transition: width 0.4s ease; }
+
+  /* SAVED PROGRESS BANNER */
+  .saved-banner {
+    width: 100%; max-width: 720px;
+    background: rgba(124,107,255,0.1); border: 1px solid rgba(124,107,255,0.3);
+    border-radius: 10px; padding: 10px 16px; margin-bottom: 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 13px; color: var(--text2);
+  }
+  .saved-banner.hidden { display: none; }
+  .resume-btn {
+    background: var(--accent); color: #fff; border: none; border-radius: 6px;
+    padding: 5px 12px; font-size: 12px; font-family: 'DM Sans', sans-serif;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .resume-btn:hover { background: #6b5ce7; }
+  .clear-btn {
+    background: none; border: none; color: var(--text2); cursor: pointer;
+    font-size: 12px; text-decoration: underline; margin-left: 8px;
+  }
+
+  /* CARD (FLASHCARD MODE) */
+  .card-wrap { width: 100%; max-width: 720px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 24px; padding: 48px 40px; min-height: 240px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; position: relative;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+  }
+  .card-label { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 20px; }
+  .card-unit-tag {
+    position: absolute; top: 20px; right: 20px;
+    font-size: 11px; color: var(--text2); background: var(--surface2);
+    border-radius: 99px; padding: 4px 10px; border: 1px solid var(--border);
+  }
+  .card-term { font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 700; color: var(--text); line-height: 1.2; }
+  .card-def { font-size: 17px; font-weight: 300; color: var(--text); line-height: 1.6; max-width: 560px; }
+  .card-hint { font-size: 13px; color: var(--text2); margin-top: 24px; font-style: italic; }
+  .reveal-btn {
+    margin-top: 28px; background: var(--accent); color: #fff; border: none;
+    border-radius: 12px; padding: 14px 36px; font-size: 15px;
+    font-family: 'DM Sans', sans-serif; font-weight: 500; cursor: pointer; transition: all 0.15s;
+  }
+  .reveal-btn:hover { background: #6b5ce7; transform: translateY(-1px); }
+  .answer-btns { display: flex; gap: 12px; margin-top: 24px; width: 100%; max-width: 720px; }
+  .ans-btn {
+    flex: 1; padding: 16px; border-radius: 14px; border: 1.5px solid;
+    font-size: 14px; font-family: 'DM Sans', sans-serif; font-weight: 500;
+    cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .ans-btn.got-it { background: rgba(74,222,128,0.08); border-color: var(--green); color: var(--green); }
+  .ans-btn.got-it:hover { background: rgba(74,222,128,0.18); transform: translateY(-1px); }
+  .ans-btn.missed { background: rgba(255,107,107,0.08); border-color: var(--accent2); color: var(--accent2); }
+  .ans-btn.missed:hover { background: rgba(255,107,107,0.18); transform: translateY(-1px); }
+
+  /* MULTIPLE CHOICE */
+  .mc-wrap { width: 100%; max-width: 720px; }
+  .mc-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 24px; padding: 36px 40px; margin-bottom: 16px;
+    position: relative; box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+  }
+  .mc-label { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+  .mc-unit-tag {
+    position: absolute; top: 20px; right: 20px;
+    font-size: 11px; color: var(--text2); background: var(--surface2);
+    border-radius: 99px; padding: 4px 10px; border: 1px solid var(--border);
+  }
+  .mc-question { font-size: 18px; font-weight: 400; line-height: 1.6; color: var(--text); }
+  .mc-options { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
+  .mc-option {
+    background: var(--surface2); border: 1.5px solid var(--border);
+    border-radius: 12px; padding: 16px 20px; cursor: pointer;
+    font-size: 14px; font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s; text-align: left; color: var(--text);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .mc-option:hover:not(.disabled) { border-color: var(--accent); background: rgba(124,107,255,0.08); }
+  .mc-option.correct { border-color: var(--green) !important; background: rgba(74,222,128,0.1) !important; color: var(--green); }
+  .mc-option.wrong { border-color: var(--accent2) !important; background: rgba(255,107,107,0.1) !important; color: var(--accent2); }
+  .mc-option.disabled { cursor: default; }
+  .mc-option.show-correct { border-color: var(--green) !important; background: rgba(74,222,128,0.07) !important; }
+  .option-letter {
+    width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600; flex-shrink: 0; color: var(--text2);
+  }
+  .mc-option.correct .option-letter { border-color: var(--green); color: var(--green); }
+  .mc-option.wrong .option-letter { border-color: var(--accent2); color: var(--accent2); }
+  .mc-option.show-correct .option-letter { border-color: var(--green); color: var(--green); }
+  .mc-feedback {
+    font-size: 13px; margin-top: 12px; padding: 14px 16px;
+    border-radius: 10px; display: none; line-height: 1.6;
+  }
+  .mc-feedback.correct { background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.25); color: var(--text); display: block; }
+  .mc-feedback.wrong { background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.25); color: var(--text); display: block; }
+  .mc-feedback-header { font-weight: 600; margin-bottom: 6px; font-size: 13px; }
+  .mc-feedback-header.correct { color: var(--green); }
+  .mc-feedback-header.wrong { color: var(--accent2); }
+  .mc-feedback-body { color: var(--text2); font-size: 13px; }
+  .mc-feedback-body.loading { color: var(--text2); opacity: 0.6; font-style: italic; }
+  @keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+  .mc-feedback-body.loading { animation: pulse 1.2s ease-in-out infinite; }
+  .mc-next-btn {
+    width: 100%; max-width: 720px; background: var(--accent); color: #fff;
+    border: none; border-radius: 12px; padding: 14px; font-size: 15px;
+    font-family: 'DM Sans', sans-serif; font-weight: 500; cursor: pointer;
+    transition: all 0.15s; display: none; margin-top: 4px;
+  }
+  .mc-next-btn:hover { background: #6b5ce7; }
+  .mc-next-btn.visible { display: block; }
+
+  /* DONE SCREEN */
+  .done-screen {
+    text-align: center; max-width: 500px; width: 100%;
+    display: none; flex-direction: column; align-items: center; gap: 16px;
+  }
+  .done-screen.show { display: flex; }
+  .done-emoji { font-size: 64px; margin-bottom: 8px; }
+  .done-title { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800; }
+  .done-sub { font-size: 15px; color: var(--text2); line-height: 1.6; }
+  .score-ring {
+    width: 120px; height: 120px; border-radius: 50%;
+    border: 4px solid var(--green);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    margin: 8px auto;
+  }
+  .score-num { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; color: var(--green); }
+  .score-label { font-size: 11px; color: var(--text2); }
+  .restart-btn {
+    background: var(--surface2); color: var(--text); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 28px; font-size: 14px;
+    font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.15s; margin-top: 4px;
+  }
+  .restart-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .restart-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .restart-btn.primary:hover { background: #6b5ce7; }
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+
+  .key-hint { font-size: 12px; color: var(--text2); margin-top: 14px; text-align: center; }
+  kbd { background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 2px 6px; font-size: 11px; font-family: monospace; }
+  .hidden { display: none !important; }
+
+  /* Save indicator */
+  .save-indicator {
+    font-size: 11px; color: var(--text2); margin-top: 10px;
+    text-align: center; opacity: 0; transition: opacity 0.3s;
+  }
+  .save-indicator.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">AP<span>Psych</span></div>
+  <div class="stats-bar">
+    <div class="stat"><div class="dot green"></div><span id="correct-count">0</span> correct</div>
+    <div class="stat"><div class="dot red"></div><span id="wrong-count">0</span> missed</div>
+    <div class="stat"><div class="dot gray"></div><span id="remaining-count">0</span> left</div>
+  </div>
+</header>
+
+<!-- Mode switcher -->
+<div class="mode-switcher">
+  <button class="mode-btn active" id="btn-flashcard">📇 Flashcards</button>
+  <button class="mode-btn" id="btn-mc">🎯 Multiple Choice</button>
+</div>
+
+<!-- Unit filter -->
+<div class="unit-filter" id="unit-filter">
+  <button class="unit-btn active" data-unit="all">All Units</button>
+  <button class="unit-btn" data-unit="1">Unit 1</button>
+  <button class="unit-btn" data-unit="2">Unit 2</button>
+  <button class="unit-btn" data-unit="3">Unit 3</button>
+  <button class="unit-btn" data-unit="4">Unit 4</button>
+  <button class="unit-btn" data-unit="5">Unit 5</button>
+</div>
+
+<!-- Saved progress banner -->
+<div class="saved-banner hidden" id="saved-banner">
+  <span id="saved-text">📌 You have saved progress</span>
+  <div>
+    <button class="resume-btn" id="resume-btn">Resume</button>
+    <button class="clear-btn" id="clear-btn">clear</button>
+  </div>
+</div>
+
+<!-- Progress bar -->
+<div class="progress-wrap">
+  <span id="progress-text">0 / 0</span>
+  <span id="pct-text">0%</span>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+
+<!-- FLASHCARD MODE -->
+<div id="flashcard-area" class="card-wrap">
+  <div class="card" id="main-card">
+    <div class="card-label" id="card-label">Term</div>
+    <div class="card-unit-tag" id="card-unit-tag">Unit 1</div>
+    <div class="card-term" id="card-term">Loading...</div>
+    <div class="card-def hidden" id="card-def"></div>
+    <div class="card-hint" id="card-hint">Think about the definition, then reveal</div>
+  </div>
+  <div style="display:flex;justify-content:center;margin-top:24px;">
+    <button class="reveal-btn" id="reveal-btn">Reveal Definition</button>
+  </div>
+  <div class="answer-btns hidden" id="answer-btns">
+    <button class="ans-btn missed" id="missed-btn">✗ Still Learning</button>
+    <button class="ans-btn got-it" id="gotit-btn">✓ Got It</button>
+  </div>
+  <div class="key-hint"><kbd>Space</kbd> reveal &nbsp;·&nbsp; <kbd>←</kbd> still learning &nbsp;·&nbsp; <kbd>→</kbd> got it</div>
+</div>
+
+<!-- MULTIPLE CHOICE MODE -->
+<div id="mc-area" class="mc-wrap hidden">
+  <div class="mc-card" id="mc-card">
+    <div class="mc-label">Which term matches this definition?</div>
+    <div class="mc-unit-tag" id="mc-unit-tag">Unit 1</div>
+    <div class="mc-question" id="mc-question"></div>
+    <div class="mc-options" id="mc-options"></div>
+    <div class="mc-feedback" id="mc-feedback"></div>
+  </div>
+  <button class="mc-next-btn" id="mc-next-btn">Next Question →</button>
+  <div class="key-hint" id="mc-key-hint"><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd> select &nbsp;·&nbsp; <kbd>Enter</kbd> next</div>
+</div>
+
+<!-- DONE SCREEN -->
+<div class="done-screen" id="done-screen">
+  <div class="done-emoji" id="done-emoji">🎉</div>
+  <div class="done-title">Round Complete!</div>
+  <div class="score-ring">
+    <div class="score-num" id="done-score">0%</div>
+    <div class="score-label">accuracy</div>
+  </div>
+  <div class="done-sub" id="done-sub"></div>
+  <div class="btn-row" style="margin-top:8px;">
+    <button class="restart-btn" id="review-missed-btn">Study Missed Terms</button>
+    <button class="restart-btn primary" id="restart-btn">Restart All</button>
+  </div>
+</div>
+
+<div class="save-indicator" id="save-indicator">✓ Progress saved</div>
+
+<script>
+// ─── ALL TERMS ───────────────────────────────────────────────────────────────
+const ALL_TERMS = [
+  {u:1,t:"Nature and nurture",d:"The debate over whether genetics (nature) or environment (nurture) plays a greater role in determining behavior and mental processes."},
+  {u:1,t:"Genetic predisposition",d:"An increased likelihood of developing a particular trait or condition based on one's genetic makeup."},
+  {u:1,t:"Evolutionary perspective",d:"A psychological approach that explains behavior and mental processes in terms of natural selection and adaptation."},
+  {u:1,t:"Eugenics",d:"The discredited practice of attempting to improve the human gene pool by selectively encouraging or discouraging reproduction."},
+  {u:1,t:"Twin studies",d:"Research comparing identical and fraternal twins to assess the relative contributions of genetics and environment."},
+  {u:1,t:"Central nervous system",d:"The brain and spinal cord; the body's main information-processing center."},
+  {u:1,t:"Peripheral nervous system",d:"All nerves outside the brain and spinal cord; connects the CNS to the rest of the body."},
+  {u:1,t:"Somatic nervous system",d:"Division of the PNS that controls voluntary muscle movements and transmits sensory information to the CNS."},
+  {u:1,t:"Autonomic nervous system",d:"Division of the PNS that regulates involuntary functions like heart rate, digestion, and breathing."},
+  {u:1,t:"Sympathetic nervous system",d:"Division of the ANS that arouses the body for action ('fight-or-flight'); increases heart rate, dilates pupils, inhibits digestion."},
+  {u:1,t:"Parasympathetic nervous system",d:"Division of the ANS that calms the body after arousal ('rest-and-digest'); slows heart rate, promotes digestion."},
+  {u:1,t:"Glial cell",d:"Non-neuronal brain cells that support, nourish, and protect neurons; also play roles in neural signaling."},
+  {u:1,t:"Neurons",d:"Nerve cells that are the basic building blocks of the nervous system; transmit electrical and chemical signals."},
+  {u:1,t:"Reflex arc",d:"A neural pathway that controls a reflex action, often bypassing the brain for speed."},
+  {u:1,t:"Sensory neurons",d:"Neurons that carry incoming information from sensory receptors to the CNS."},
+  {u:1,t:"Motor neurons",d:"Neurons that carry outgoing information from the CNS to muscles and glands."},
+  {u:1,t:"Interneurons",d:"Neurons within the CNS that process information between sensory inputs and motor outputs."},
+  {u:1,t:"Neural transmission",d:"The process by which neurons communicate via electrical impulses and chemical neurotransmitters."},
+  {u:1,t:"All-or-nothing principle",d:"A neuron either fires completely or not at all; the strength of a stimulus does not affect the magnitude of the action potential."},
+  {u:1,t:"Action potential",d:"The electrical impulse that travels down a neuron's axon when the neuron fires."},
+  {u:1,t:"Depolarization",d:"The reversal of a neuron's resting charge when positive ions rush in, triggering an action potential."},
+  {u:1,t:"Refractory period",d:"The brief period after an action potential during which a neuron cannot fire again."},
+  {u:1,t:"Resting potential",d:"The negative electrical charge of a neuron at rest, typically around -70 millivolts."},
+  {u:1,t:"Reuptake",d:"The process by which a neurotransmitter is reabsorbed by the sending neuron after its release."},
+  {u:1,t:"Firing threshold",d:"The minimum level of stimulation needed to trigger an action potential in a neuron."},
+  {u:1,t:"Multiple sclerosis",d:"A disease in which the immune system attacks the myelin sheath, disrupting neural communication."},
+  {u:1,t:"Myasthenia gravis",d:"An autoimmune disorder that blocks acetylcholine receptors, causing muscle weakness."},
+  {u:1,t:"Dopamine",d:"Neurotransmitter linked to reward, motivation, and movement; excess associated with schizophrenia, deficiency with Parkinson's."},
+  {u:1,t:"Serotonin",d:"Neurotransmitter affecting mood, hunger, and sleep; low levels linked to depression."},
+  {u:1,t:"Norepinephrine",d:"Neurotransmitter and hormone involved in arousal and stress response; low levels linked to depression."},
+  {u:1,t:"Glutamate",d:"The main excitatory neurotransmitter in the brain; involved in learning and memory."},
+  {u:1,t:"GABA",d:"The main inhibitory neurotransmitter; calms neural activity; low levels linked to anxiety disorders."},
+  {u:1,t:"Endorphins",d:"Natural opioid neurotransmitters that reduce pain and increase pleasure."},
+  {u:1,t:"Substance P",d:"A neurotransmitter involved in transmitting pain signals."},
+  {u:1,t:"Acetylcholine",d:"Neurotransmitter involved in muscle action, memory, and learning; deficiency linked to Alzheimer's."},
+  {u:1,t:"Adrenaline (Epinephrine)",d:"Hormone released by the adrenal glands during stress; increases heart rate and energy availability."},
+  {u:1,t:"Leptin",d:"Hormone released by fat cells that signals satiety (fullness) to the hypothalamus."},
+  {u:1,t:"Ghrelin",d:"Hormone released by the stomach that signals hunger to the brain."},
+  {u:1,t:"Melatonin",d:"Hormone produced by the pineal gland that regulates sleep-wake cycles."},
+  {u:1,t:"Oxytocin",d:"The 'bonding hormone'; promotes trust, social bonding, and is released during childbirth and breastfeeding."},
+  {u:1,t:"Agonist",d:"A drug or chemical that mimics or enhances the effect of a neurotransmitter."},
+  {u:1,t:"Antagonist",d:"A drug or chemical that blocks or inhibits the effect of a neurotransmitter."},
+  {u:1,t:"Reuptake inhibitors",d:"Drugs that block the reabsorption of neurotransmitters, increasing their availability in the synapse (e.g., SSRIs)."},
+  {u:1,t:"Psychoactive drugs",d:"Chemicals that alter brain function, perception, mood, or behavior."},
+  {u:1,t:"Stimulants",d:"Drugs that speed up CNS activity (e.g., caffeine, cocaine); increase arousal and energy."},
+  {u:1,t:"Depressants",d:"Drugs that slow CNS activity (e.g., alcohol); reduce inhibition and slow reaction time."},
+  {u:1,t:"Hallucinogens",d:"Drugs that distort perception and cause hallucinations (e.g., marijuana, LSD)."},
+  {u:1,t:"Opioids",d:"Drugs derived from opium that reduce pain and induce euphoria (e.g., heroin, morphine); highly addictive."},
+  {u:1,t:"Tolerance",d:"The need for increasing doses of a drug to achieve the same effect."},
+  {u:1,t:"Addiction/dependence",d:"A compulsive craving and use of a substance despite harmful consequences."},
+  {u:1,t:"Withdrawal symptoms",d:"Unpleasant physical or psychological effects that occur when a person stops taking an addictive substance."},
+  {u:1,t:"Brainstem",d:"The oldest brain region; controls basic survival functions like breathing, heart rate, and swallowing."},
+  {u:1,t:"Medulla",d:"Part of the brainstem that controls heartbeat and breathing."},
+  {u:1,t:"Reticular activating system",d:"A network in the brainstem that regulates arousal, alertness, and sleep-wake transitions."},
+  {u:1,t:"Reward center",d:"Brain regions (especially the nucleus accumbens) involved in pleasure and reinforcement."},
+  {u:1,t:"Cerebellum",d:"Brain region at the rear base; coordinates movement, balance, and procedural learning."},
+  {u:1,t:"Cerebral cortex",d:"The thin outer layer of the brain responsible for higher-order thinking, perception, and voluntary behavior."},
+  {u:1,t:"Hemispheres",d:"The two halves (left and right) of the cerebral cortex, each controlling the opposite side of the body."},
+  {u:1,t:"Limbic system",d:"A set of brain structures involved in emotion, memory, and motivation."},
+  {u:1,t:"Thalamus",d:"The brain's sensory relay station; routes information to the appropriate cortical areas (except smell)."},
+  {u:1,t:"Hypothalamus",d:"Regulates hunger, thirst, body temperature, and sex drive; controls the pituitary gland."},
+  {u:1,t:"Pituitary gland",d:"The 'master gland' that regulates other endocrine glands under direction from the hypothalamus."},
+  {u:1,t:"Amygdala",d:"Almond-shaped limbic structure involved in processing emotions, especially fear and aggression."},
+  {u:1,t:"Hippocampus",d:"Limbic structure crucial for forming new explicit (declarative) memories."},
+  {u:1,t:"Corpus callosum",d:"A band of nerve fibers connecting the two cerebral hemispheres, allowing them to communicate."},
+  {u:1,t:"Occipital lobes",d:"Rear lobes of the cortex; responsible for visual processing."},
+  {u:1,t:"Frontal lobes",d:"Front lobes of the cortex; responsible for planning, decision-making, voluntary movement, and personality."},
+  {u:1,t:"Prefrontal cortex",d:"Front part of the frontal lobe; responsible for judgment, planning, impulse control, and personality."},
+  {u:1,t:"Motor cortex",d:"Strip at the rear of the frontal lobe that controls voluntary muscle movements."},
+  {u:1,t:"Temporal lobes",d:"Side lobes of the cortex; involved in hearing, language, and memory."},
+  {u:1,t:"Parietal lobes",d:"Top lobes of the cortex; process touch and spatial information (somatosensory cortex)."},
+  {u:1,t:"Somatosensory cortex",d:"Strip in the parietal lobe that registers and processes body touch and movement sensations."},
+  {u:1,t:"Association areas",d:"Cortical areas that integrate information from multiple senses and link perception to memory and reasoning."},
+  {u:1,t:"Split brain research",d:"Studies on patients whose corpus callosum was severed, revealing independent functioning of the two hemispheres."},
+  {u:1,t:"Hemispheric specialization",d:"The left hemisphere is more involved in language; the right hemisphere in spatial tasks and holistic processing."},
+  {u:1,t:"Broca's area",d:"Left frontal lobe region involved in speech production; damage causes halting speech."},
+  {u:1,t:"Wernicke's area",d:"Left temporal lobe region involved in language comprehension; damage causes fluent but meaningless speech."},
+  {u:1,t:"Aphasia",d:"Impaired language ability due to brain damage, typically in the left hemisphere."},
+  {u:1,t:"Contralateral organization",d:"Each hemisphere of the brain controls the opposite side of the body."},
+  {u:1,t:"Plasticity",d:"The brain's ability to reorganize and form new neural connections in response to experience or injury."},
+  {u:1,t:"EEG",d:"Records electrical activity in the brain via scalp electrodes; useful for studying sleep stages."},
+  {u:1,t:"fMRI",d:"Neuroimaging technique that detects brain activity by measuring blood flow; shows which brain areas are active."},
+  {u:1,t:"Lesioning procedure",d:"Deliberately destroying specific brain tissue to study its function in animal research."},
+  {u:1,t:"Circadian Rhythm",d:"The body's natural 24-hour biological clock that regulates sleep-wake cycles and other physiological processes."},
+  {u:1,t:"NREM 1",d:"Lightest sleep stage; hypnagogic sensations (falling feelings); easy to wake."},
+  {u:1,t:"NREM 2",d:"Sleep deepens; sleep spindles appear on EEG; body temperature drops."},
+  {u:1,t:"NREM 3",d:"Deep (slow-wave) sleep; delta waves; difficult to wake; important for physical restoration."},
+  {u:1,t:"Hypnagogic sensations",d:"Vivid sensory experiences (like a falling feeling or hearing one's name) that occur as one falls asleep."},
+  {u:1,t:"REM sleep",d:"Stage of sleep with rapid eye movements; brain is highly active; most vivid dreaming occurs; muscles are temporarily paralyzed."},
+  {u:1,t:"REM rebound",d:"When deprived of REM sleep, the brain compensates by spending more time in REM on subsequent nights."},
+  {u:1,t:"Activation-synthesis theory",d:"Dreams are the brain's attempt to make sense of random neural activity during REM sleep."},
+  {u:1,t:"Consolidation theory of dreams",d:"Sleep and dreaming help consolidate and organize memories."},
+  {u:1,t:"Insomnia",d:"Persistent difficulty falling or staying asleep."},
+  {u:1,t:"Narcolepsy",d:"A disorder causing sudden, uncontrollable sleep attacks, often triggered by strong emotions."},
+  {u:1,t:"REM sleep behavior disorder",d:"A disorder in which the normal muscle paralysis of REM fails, causing people to act out their dreams."},
+  {u:1,t:"Sleep apnea",d:"A disorder characterized by repeated stopping of breathing during sleep, causing frequent awakenings."},
+  {u:1,t:"Somnambulism",d:"Sleepwalking; occurs during NREM 3 sleep."},
+  {u:1,t:"Transduction",d:"The process by which sensory receptors convert stimulus energy into neural signals."},
+  {u:1,t:"Absolute threshold",d:"The minimum stimulus intensity needed to detect a stimulus 50% of the time."},
+  {u:1,t:"Just-noticeable difference (JND)",d:"The minimum difference between two stimuli that can be detected 50% of the time; also called the difference threshold."},
+  {u:1,t:"Weber's Law",d:"The principle that the JND is a constant proportion of the original stimulus."},
+  {u:1,t:"Sensory adaptation",d:"The diminishing sensitivity to an unchanging stimulus over time."},
+  {u:1,t:"Sensory interaction",d:"The interplay of different senses influencing each other (e.g., taste is influenced by smell)."},
+  {u:1,t:"Synesthesia",d:"A condition where stimulation of one sense automatically triggers another (e.g., seeing colors when hearing music)."},
+  {u:1,t:"Retina",d:"The light-sensitive inner surface of the eye containing photoreceptors (rods and cones)."},
+  {u:1,t:"Blind spot",d:"The point on the retina where the optic nerve exits; has no photoreceptors, creating a gap in vision."},
+  {u:1,t:"Accommodation (eye)",d:"The process by which the lens changes shape to focus on objects at different distances."},
+  {u:1,t:"Nearsightedness",d:"Difficulty seeing distant objects because the eye focuses images in front of the retina."},
+  {u:1,t:"Farsightedness",d:"Difficulty seeing close objects because the eye focuses images behind the retina."},
+  {u:1,t:"Rods",d:"Photoreceptors sensitive to dim light; detect black-and-white and peripheral vision."},
+  {u:1,t:"Cones",d:"Photoreceptors concentrated in the fovea; detect color and fine detail in bright light."},
+  {u:1,t:"Trichromatic theory",d:"Color vision is based on three types of cones sensitive to red, green, and blue wavelengths."},
+  {u:1,t:"Opponent-process theory",d:"Color vision is explained by opposing pairs of colors (red-green, blue-yellow, black-white); explains afterimages."},
+  {u:1,t:"Fovea",d:"The central focal point of the retina; highest concentration of cones; sharpest vision."},
+  {u:1,t:"Afterimages",d:"Visual sensations that persist after a stimulus is removed; explained by opponent-process theory."},
+  {u:1,t:"Ganglion cells",d:"Retinal neurons whose axons form the optic nerve, carrying visual information to the brain."},
+  {u:1,t:"Dichromatism",d:"Color blindness involving only two types of functioning cones; inability to distinguish certain colors."},
+  {u:1,t:"Monochromatism",d:"Complete color blindness; only one type of cone (or none) is functional."},
+  {u:1,t:"Prosopagnosia",d:"The inability to recognize faces, caused by damage to the fusiform face area in the temporal lobe."},
+  {u:1,t:"Blindsight",d:"The ability to respond to visual stimuli without consciously seeing them, due to damage to the visual cortex."},
+  {u:1,t:"Place theory",d:"Different areas of the cochlea respond to different sound frequencies; explains pitch perception for high-frequency sounds."},
+  {u:1,t:"Frequency theory",d:"The rate of neural firing matches the frequency of a sound wave; explains pitch for low-frequency sounds."},
+  {u:1,t:"Volley principle",d:"Groups of neurons fire in sequence to code frequencies too high for a single neuron to follow."},
+  {u:1,t:"Sound localization",d:"The ability to determine the direction of a sound source using differences in timing and loudness between the two ears."},
+  {u:1,t:"Conduction deafness",d:"Hearing loss caused by damage to the mechanical system that conducts sound waves to the cochlea."},
+  {u:1,t:"Sensorineural deafness",d:"Hearing loss caused by damage to the cochlea's hair cells or the auditory nerve."},
+  {u:1,t:"Olfaction",d:"The sense of smell; chemical receptors in the nose detect airborne molecules."},
+  {u:1,t:"Gustation",d:"The sense of taste; taste buds detect sweet, sour, bitter, salty, umami, and oleogustus."},
+  {u:1,t:"Pheromones",d:"Chemical signals released by animals that affect the behavior or physiology of other members of the same species."},
+  {u:1,t:"Supertasters",d:"People with a higher-than-average number of taste buds; highly sensitive to bitter tastes."},
+  {u:1,t:"Gate control theory",d:"Pain signals can be blocked in the spinal cord by other sensory signals or by brain signals; explains why rubbing an injury helps."},
+  {u:1,t:"Phantom limb syndrome",d:"The experience of sensations or pain in a limb that has been amputated."},
+  {u:1,t:"Vestibular sense",d:"Sense of balance and spatial orientation; detected by the semicircular canals in the inner ear."},
+  {u:1,t:"Kinesthesis",d:"The sense of body position and movement of muscles and joints."},
+  // UNIT 2
+  {u:2,t:"Bottom-up processing",d:"Perception that starts with sensory data and builds up to a perception (data-driven)."},
+  {u:2,t:"Top-down processing",d:"Perception guided by expectations, prior knowledge, and context (concept-driven)."},
+  {u:2,t:"Schemas",d:"Mental frameworks that organize and interpret information based on prior knowledge."},
+  {u:2,t:"Perceptual set",d:"A mental predisposition to perceive one thing and not another, influenced by expectations and context."},
+  {u:2,t:"Gestalt principles",d:"The tendency to organize sensory information into meaningful wholes (closure, figure-ground, proximity, similarity)."},
+  {u:2,t:"Closure (Gestalt)",d:"We mentally fill in gaps to perceive complete figures."},
+  {u:2,t:"Figure-ground",d:"We separate visual stimuli into a figure (focus) and ground (background)."},
+  {u:2,t:"Proximity (Gestalt)",d:"We group nearby elements together."},
+  {u:2,t:"Similarity (Gestalt)",d:"We group similar-looking elements together."},
+  {u:2,t:"Selective attention",d:"Focusing conscious awareness on a particular stimulus while ignoring others."},
+  {u:2,t:"Cocktail party effect",d:"The ability to focus on one voice in a noisy environment while filtering out others."},
+  {u:2,t:"Change blindness",d:"Failure to notice changes in the visual scene when attention is not focused on the changing element."},
+  {u:2,t:"Inattentional blindness",d:"Failure to notice a fully visible stimulus when attention is focused elsewhere."},
+  {u:2,t:"Retinal disparity",d:"Binocular depth cue; the slight difference in images seen by each eye, used to judge distance."},
+  {u:2,t:"Convergence",d:"Binocular depth cue; the degree to which eyes turn inward when focusing on nearby objects."},
+  {u:2,t:"Relative clarity",d:"Monocular depth cue; hazy objects appear farther away than sharp objects."},
+  {u:2,t:"Relative size",d:"Monocular depth cue; smaller objects appear farther away."},
+  {u:2,t:"Texture gradient",d:"Monocular depth cue; finer texture indicates greater distance."},
+  {u:2,t:"Linear perspective",d:"Monocular depth cue; parallel lines appear to converge at a distance."},
+  {u:2,t:"Interposition",d:"Monocular depth cue; an object that partially blocks another appears closer."},
+  {u:2,t:"Perceptual constancy",d:"The perception of objects as stable despite changes in retinal image (size, shape, color, lightness)."},
+  {u:2,t:"Stroboscopic motion",d:"Apparent motion created by rapidly flashing still images (basis of movies)."},
+  {u:2,t:"Phi phenomenon",d:"Apparent motion created by lights blinking on and off in sequence."},
+  {u:2,t:"Autokinetic effect",d:"The illusion that a stationary point of light in a dark room is moving."},
+  {u:2,t:"Concepts",d:"Mental groupings of similar objects, events, and ideas."},
+  {u:2,t:"Prototypes",d:"The best or most typical example of a concept."},
+  {u:2,t:"Metacognition",d:"Thinking about one's own thinking; awareness and understanding of one's cognitive processes."},
+  {u:2,t:"Algorithms",d:"Step-by-step problem-solving procedures that guarantee a correct solution."},
+  {u:2,t:"Heuristics",d:"Mental shortcuts or rules of thumb that allow for quick judgments; may lead to errors."},
+  {u:2,t:"Representativeness heuristic",d:"Judging the likelihood of something based on how closely it resembles a typical case."},
+  {u:2,t:"Availability heuristic",d:"Judging the likelihood of events based on how easily examples come to mind."},
+  {u:2,t:"Mental set",d:"The tendency to approach a problem in the same way that worked in the past, even when it's no longer effective."},
+  {u:2,t:"Functional fixedness",d:"The tendency to see objects only in their traditional uses, limiting creative problem-solving."},
+  {u:2,t:"Priming",d:"Exposure to a stimulus influences response to a later stimulus, often unconsciously."},
+  {u:2,t:"Framing",d:"The way information is presented influences how it is interpreted and the decisions made."},
+  {u:2,t:"Gambler's fallacy",d:"The mistaken belief that a random event is more or less likely based on past outcomes."},
+  {u:2,t:"Sunk-cost fallacy",d:"Continuing a behavior due to previously invested resources even when it no longer makes sense."},
+  {u:2,t:"Convergent thinking",d:"Narrowing options to find the single best solution to a problem."},
+  {u:2,t:"Divergent thinking",d:"Generating many possible solutions to a problem; key component of creativity."},
+  {u:2,t:"Encoding",d:"The process of getting information into memory."},
+  {u:2,t:"Storage",d:"The retention of encoded information over time."},
+  {u:2,t:"Retrieval",d:"The process of getting information out of memory storage."},
+  {u:2,t:"Automatic processing",d:"Unconscious encoding of incidental information (space, time, frequency) without effort."},
+  {u:2,t:"Effortful processing",d:"Encoding that requires attention and conscious effort."},
+  {u:2,t:"Explicit memory",d:"Memory of facts and experiences that requires conscious recall (declarative memory)."},
+  {u:2,t:"Implicit memory",d:"Memory of skills and conditioned responses that does not require conscious recall."},
+  {u:2,t:"Episodic memory",d:"Type of explicit memory: memory of personally experienced events (autobiographical)."},
+  {u:2,t:"Semantic memory",d:"Type of explicit memory: memory of general knowledge and facts."},
+  {u:2,t:"Levels of processing",d:"Deeper, more meaningful processing leads to better memory than shallow processing."},
+  {u:2,t:"Sensory memory",d:"Very brief initial recording of sensory information (iconic for visual, echoic for auditory)."},
+  {u:2,t:"Short-term memory (STM)",d:"Active working memory that holds about 7 (±2) items for about 20-30 seconds without rehearsal."},
+  {u:2,t:"Long-term memory (LTM)",d:"Relatively permanent and limitless storehouse of memory."},
+  {u:2,t:"Working memory",d:"A model of STM that includes the central executive, phonological loop, and visuospatial sketchpad."},
+  {u:2,t:"Prospective memory",d:"Memory for things you intend to do in the future."},
+  {u:2,t:"Mnemonic devices",d:"Memory aids that use encoding strategies like vivid imagery or acronyms."},
+  {u:2,t:"Method of Loci",d:"A mnemonic strategy that involves mentally placing items to be remembered at familiar locations."},
+  {u:2,t:"Chunking",d:"Organizing items into familiar, manageable units to improve STM capacity."},
+  {u:2,t:"Spacing effect",d:"Distributed practice over time leads to better long-term retention than massed practice (cramming)."},
+  {u:2,t:"Serial position effect",d:"The tendency to recall the first (primacy) and last (recency) items in a list better than middle items."},
+  {u:2,t:"Primacy effect",d:"Better recall of items at the beginning of a list due to rehearsal into LTM."},
+  {u:2,t:"Recency effect",d:"Better recall of items at the end of a list because they are still in STM."},
+  {u:2,t:"Maintenance rehearsal",d:"Repeating information to keep it in STM; not very effective for LTM."},
+  {u:2,t:"Elaborative rehearsal",d:"Relating new information to existing knowledge; leads to deeper encoding and better LTM."},
+  {u:2,t:"Retrograde amnesia",d:"Loss of memory for events that occurred before a brain injury."},
+  {u:2,t:"Anterograde amnesia",d:"Inability to form new memories after a brain injury; older memories may remain intact."},
+  {u:2,t:"Infantile amnesia",d:"The inability to recall events from early childhood (before age 3-4), likely due to hippocampus immaturity."},
+  {u:2,t:"Retrieval cues",d:"Stimuli that aid in recalling stored memories."},
+  {u:2,t:"Context-dependent memory",d:"Memory is best recalled in the same environment in which it was encoded."},
+  {u:2,t:"State-dependent memory",d:"Memory is best recalled in the same internal state (mood, intoxication) as when it was encoded."},
+  {u:2,t:"Mood-congruent memory",d:"The tendency to recall information that is consistent with one's current mood."},
+  {u:2,t:"Testing effect",d:"Retrieval practice (testing yourself) enhances long-term retention more than re-reading."},
+  {u:2,t:"Recall",d:"Retrieving information with no external cues (e.g., fill-in-the-blank)."},
+  {u:2,t:"Recognition",d:"Identifying previously learned information when presented with it (e.g., multiple choice)."},
+  {u:2,t:"Forgetting curve",d:"Ebbinghaus's finding that most forgetting occurs soon after learning, then levels off."},
+  {u:2,t:"Encoding failure",d:"Information never enters long-term memory because it was never properly encoded."},
+  {u:2,t:"Proactive interference",d:"Old memories interfere with the learning of new information."},
+  {u:2,t:"Retroactive interference",d:"New memories interfere with the recall of old information."},
+  {u:2,t:"Tip-of-the-tongue phenomenon",d:"The feeling of knowing something but being temporarily unable to retrieve it."},
+  {u:2,t:"Repression",d:"Freudian concept: motivated forgetting of emotionally painful memories."},
+  {u:2,t:"Misinformation effect",d:"Incorporating misleading information into one's memory of an event after the fact."},
+  {u:2,t:"Source amnesia",d:"Remembering information but forgetting where or when it was learned."},
+  {u:2,t:"Constructive memory",d:"Memory is not a perfect recording but is actively constructed and can be distorted."},
+  {u:2,t:"g factor",d:"Spearman's concept of a general intelligence factor that underlies all cognitive abilities."},
+  {u:2,t:"Fluid intelligence",d:"The ability to reason and solve new problems; tends to decline with age."},
+  {u:2,t:"Crystallized intelligence",d:"Accumulated knowledge and skills; tends to increase with age."},
+  {u:2,t:"Standardization",d:"The process of establishing uniform testing procedures and norms for a test."},
+  {u:2,t:"Norming",d:"Administering a test to a representative sample to establish average scores."},
+  {u:2,t:"Reliability",d:"The consistency of a test; produces stable results over time and across conditions."},
+  {u:2,t:"Validity",d:"The degree to which a test measures what it claims to measure."},
+  {u:2,t:"Construct validity",d:"The test actually measures the theoretical concept it claims to measure."},
+  {u:2,t:"Predictive validity",d:"The test accurately predicts future performance."},
+  {u:2,t:"Test-retest reliability",d:"The test produces similar results when given to the same person at different times."},
+  {u:2,t:"Split-half reliability",d:"The test produces similar results on two halves of the same test."},
+  {u:2,t:"Stereotype threat",d:"The risk of confirming a negative stereotype about one's group, which can hurt test performance."},
+  {u:2,t:"Stereotype lift",d:"The performance boost some experience when aware that an outgroup faces a negative stereotype."},
+  {u:2,t:"Flynn effect",d:"The observed rise in average IQ scores across generations worldwide."},
+  {u:2,t:"Achievement test",d:"A test that measures what a person has already learned."},
+  {u:2,t:"Aptitude test",d:"A test designed to predict future performance or potential."},
+  {u:2,t:"Growth mindset",d:"The belief that abilities can be developed through effort; associated with greater achievement."},
+  {u:2,t:"Fixed mindset",d:"The belief that abilities are innate and unchangeable."},
+  // UNIT 3
+  {u:3,t:"Longitudinal design",d:"A research method that follows the same participants over a long period of time to track development."},
+  {u:3,t:"Cross-sectional design",d:"A research method that compares people of different ages at the same point in time."},
+  {u:3,t:"Continuous development",d:"The view that development is a gradual, cumulative process."},
+  {u:3,t:"Discontinuous development",d:"The view that development occurs in distinct stages with qualitative differences between them."},
+  {u:3,t:"Teratogens",d:"Environmental agents (drugs, alcohol, infections) that can harm the developing fetus."},
+  {u:3,t:"Rooting reflex",d:"When an infant's cheek is touched, the infant turns toward the touch and begins to suck."},
+  {u:3,t:"Critical period",d:"A time window during which specific experiences must occur for normal development (especially language)."},
+  {u:3,t:"Sensitive period",d:"A time of heightened receptivity to certain experiences; less rigid than a critical period."},
+  {u:3,t:"Imprinting",d:"The process by which young animals form a rapid attachment to the first moving thing they see (Lorenz's geese)."},
+  {u:3,t:"Puberty",d:"The period of sexual maturation during which reproductive ability develops."},
+  {u:3,t:"Primary sex characteristics",d:"The reproductive organs that develop during puberty (ovaries, testes, uterus, penis)."},
+  {u:3,t:"Secondary sex characteristics",d:"Non-reproductive sexual traits that develop during puberty (breasts, pubic hair, voice changes)."},
+  {u:3,t:"Menarche",d:"A girl's first menstrual period."},
+  {u:3,t:"Spermarche",d:"A boy's first ejaculation."},
+  {u:3,t:"Menopause",d:"The cessation of menstruation, typically in a woman's late 40s to early 50s."},
+  {u:3,t:"Piaget's theory",d:"Children progress through four stages of cognitive development: sensorimotor, preoperational, concrete operational, and formal operational."},
+  {u:3,t:"Object permanence",d:"The understanding that objects continue to exist even when out of sight; develops in the sensorimotor stage."},
+  {u:3,t:"Conservation",d:"The understanding that quantity remains the same despite changes in shape or appearance; mastered in concrete operational stage."},
+  {u:3,t:"Egocentrism (Piaget)",d:"The preoperational child's difficulty seeing the world from another's perspective."},
+  {u:3,t:"Animism",d:"The preoperational belief that inanimate objects have lifelike qualities."},
+  {u:3,t:"Theory of mind",d:"The ability to understand that others have mental states different from one's own; develops around age 4."},
+  {u:3,t:"Sensorimotor stage",d:"Piaget's first stage (birth–2 years): infants learn through sensory experiences and motor actions."},
+  {u:3,t:"Preoperational stage",d:"Piaget's second stage (2–7 years): symbolic thinking develops but logic is limited; egocentric."},
+  {u:3,t:"Concrete operational stage",d:"Piaget's third stage (7–11 years): logical thinking about concrete objects; conservation mastered."},
+  {u:3,t:"Formal operational stage",d:"Piaget's fourth stage (12+ years): abstract and hypothetical thinking develops."},
+  {u:3,t:"Scaffolding",d:"Temporary support given by a more knowledgeable person to help a learner accomplish a task (Vygotsky)."},
+  {u:3,t:"Zone of proximal development",d:"Vygotsky's concept: the gap between what a learner can do alone and what they can do with guidance."},
+  {u:3,t:"Dementia",d:"A progressive deterioration of cognitive function, including memory loss; Alzheimer's is the most common form."},
+  {u:3,t:"Phonemes",d:"The smallest distinct units of sound in a language."},
+  {u:3,t:"Morphemes",d:"The smallest units of meaning in a language."},
+  {u:3,t:"Semantics",d:"The study of meaning in language; the actual meaning of words and sentences."},
+  {u:3,t:"Grammar",d:"The system of rules governing the structure and use of a language."},
+  {u:3,t:"Syntax",d:"The rules for combining words into grammatically correct sentences."},
+  {u:3,t:"Cooing",d:"Early language stage: infant produces vowel sounds (around 2 months)."},
+  {u:3,t:"Babbling",d:"Language stage around 4 months: infant produces repetitive consonant-vowel sounds."},
+  {u:3,t:"One-word speech",d:"Language stage around 12 months: infant uses single words to express whole ideas (holophrases)."},
+  {u:3,t:"Telegraphic speech",d:"Language stage around 24 months: two-word sentences that convey key information (e.g., 'more milk')."},
+  {u:3,t:"Overgeneralization",d:"Applying a grammatical rule too broadly (e.g., 'goed' instead of 'went'); shows rule learning."},
+  {u:3,t:"Ecological systems theory",d:"Bronfenbrenner's theory that development is influenced by nested environmental systems: micro-, meso-, exo-, macro-, and chronosystem."},
+  {u:3,t:"Microsystem",d:"The immediate environment (family, school, peers) directly experienced by the individual."},
+  {u:3,t:"Mesosystem",d:"The interactions between elements of the microsystem (e.g., relationship between home and school)."},
+  {u:3,t:"Exosystem",d:"Settings that indirectly affect development (e.g., parent's workplace)."},
+  {u:3,t:"Macrosystem",d:"The broader cultural values, laws, and customs that influence development."},
+  {u:3,t:"Chronosystem",d:"The dimension of time, including historical events and life transitions that influence development."},
+  {u:3,t:"Authoritarian parenting",d:"High demands, low responsiveness; strict rules with little explanation."},
+  {u:3,t:"Authoritative parenting",d:"High demands, high responsiveness; clear rules with warmth and explanation; associated with best outcomes."},
+  {u:3,t:"Permissive parenting",d:"Low demands, high responsiveness; few rules; indulgent."},
+  {u:3,t:"Secure attachment",d:"A healthy attachment style where infants use caregiver as a safe base and are comforted by their return."},
+  {u:3,t:"Avoidant attachment",d:"Insecure attachment: infant ignores or avoids caregiver; shows little distress at separation."},
+  {u:3,t:"Anxious attachment",d:"Insecure attachment: infant is clingy and distressed at separation; not easily comforted upon return."},
+  {u:3,t:"Disorganized attachment",d:"Insecure attachment: no consistent strategy for dealing with caregiver; often linked to abuse or neglect."},
+  {u:3,t:"Temperament",d:"A person's characteristic emotional reactivity and intensity; largely innate."},
+  {u:3,t:"Separation anxiety",d:"Distress experienced by infants when separated from their primary caregiver; peaks around 8-14 months."},
+  {u:3,t:"Contact comfort (Harlow)",d:"Infant monkeys preferred a cloth surrogate over a wire one with food, showing the importance of physical comfort in attachment."},
+  {u:3,t:"Adolescent egocentrism",d:"Heightened self-consciousness in teenagers; includes imaginary audience and personal fable."},
+  {u:3,t:"Imaginary audience",d:"The adolescent belief that others are constantly watching and evaluating them."},
+  {u:3,t:"Personal fable",d:"The adolescent belief that one is uniquely special, invulnerable, or destined for greatness."},
+  {u:3,t:"Social clock",d:"Cultural expectations for the timing of major life events (marriage, career, children)."},
+  {u:3,t:"Emerging adulthood",d:"The transitional period from adolescence to adulthood (approximately ages 18-25)."},
+  {u:3,t:"Erikson's psychosocial stages",d:"Eight stages across the lifespan, each with a central conflict to resolve (e.g., trust vs. mistrust in infancy)."},
+  {u:3,t:"Trust vs. Mistrust",d:"Erikson's first stage (infancy): infants learn to trust caregivers to meet their needs."},
+  {u:3,t:"Autonomy vs. Shame and Doubt",d:"Erikson's second stage (toddlerhood): children develop independence or doubt their abilities."},
+  {u:3,t:"Initiative vs. Guilt",d:"Erikson's third stage (early childhood): children learn to initiate tasks or feel guilty about asserting themselves."},
+  {u:3,t:"Industry vs. Inferiority",d:"Erikson's fourth stage (middle childhood): children develop competence or feel inferior to peers."},
+  {u:3,t:"Identity vs. Role Confusion",d:"Erikson's fifth stage (adolescence): teens explore identity or feel uncertain about who they are."},
+  {u:3,t:"Intimacy vs. Isolation",d:"Erikson's sixth stage (young adulthood): forming close relationships or feeling isolated."},
+  {u:3,t:"Generativity vs. Stagnation",d:"Erikson's seventh stage (middle adulthood): contributing to society or feeling unproductive."},
+  {u:3,t:"Integrity vs. Despair",d:"Erikson's eighth stage (late adulthood): reflecting on life with satisfaction or regret."},
+  {u:3,t:"Adverse childhood experiences (ACEs)",d:"Traumatic childhood experiences that increase risk for later health and mental health problems."},
+  {u:3,t:"Identity achievement",d:"Marcia's status: having explored and committed to an identity."},
+  {u:3,t:"Identity diffusion",d:"Marcia's status: no exploration or commitment to an identity."},
+  {u:3,t:"Identity foreclosure",d:"Marcia's status: committing to an identity without exploration, often adopted from parents."},
+  {u:3,t:"Identity moratorium",d:"Marcia's status: actively exploring identity but not yet committed."},
+  {u:3,t:"Classical conditioning",d:"A type of learning where a neutral stimulus becomes associated with a meaningful stimulus and acquires the ability to elicit a similar response."},
+  {u:3,t:"Acquisition (classical)",d:"The initial learning phase in which a conditioned response is established and strengthened."},
+  {u:3,t:"UCS (Unconditioned Stimulus)",d:"A stimulus that naturally and automatically triggers a response without prior learning (e.g., food causing salivation)."},
+  {u:3,t:"UCR (Unconditioned Response)",d:"The unlearned, naturally occurring response to the UCS (e.g., salivating to food)."},
+  {u:3,t:"CS (Conditioned Stimulus)",d:"A previously neutral stimulus that, after association with the UCS, triggers a conditioned response."},
+  {u:3,t:"CR (Conditioned Response)",d:"The learned response to a previously neutral (conditioned) stimulus."},
+  {u:3,t:"Extinction (classical)",d:"The diminishing of a conditioned response when the CS is repeatedly presented without the UCS."},
+  {u:3,t:"Spontaneous recovery",d:"The reappearance of an extinguished conditioned response after a rest period."},
+  {u:3,t:"Stimulus generalization",d:"The tendency to respond to stimuli similar to the original conditioned stimulus."},
+  {u:3,t:"Stimulus discrimination",d:"The ability to distinguish between the CS and other similar stimuli."},
+  {u:3,t:"Higher-order conditioning",d:"A CS is used as a UCS to condition another neutral stimulus."},
+  {u:3,t:"Counterconditioning",d:"Therapy technique that pairs a feared stimulus with a relaxation response to reduce anxiety."},
+  {u:3,t:"Taste aversion",d:"A classically conditioned dislike of a food associated with illness; can occur after only one pairing."},
+  {u:3,t:"Biological preparedness",d:"The evolutionary predisposition to learn certain associations more easily than others (e.g., snakes and spiders)."},
+  {u:3,t:"Habituation",d:"Decreased response to a repeated, unchanging stimulus."},
+  {u:3,t:"Operant conditioning",d:"A type of learning in which behavior is strengthened or weakened by its consequences."},
+  {u:3,t:"Law of Effect",d:"Thorndike's principle: behaviors followed by satisfying consequences are strengthened; unpleasant consequences weaken behavior."},
+  {u:3,t:"Positive reinforcement",d:"Adding a desirable stimulus after a behavior to increase that behavior."},
+  {u:3,t:"Negative reinforcement",d:"Removing an aversive stimulus after a behavior to increase that behavior."},
+  {u:3,t:"Positive punishment",d:"Adding an aversive stimulus after a behavior to decrease that behavior."},
+  {u:3,t:"Negative punishment",d:"Removing a desirable stimulus after a behavior to decrease that behavior."},
+  {u:3,t:"Primary reinforcers",d:"Inherently satisfying stimuli that satisfy biological needs (food, water, sex)."},
+  {u:3,t:"Secondary reinforcers",d:"Learned reinforcers that have value through association with primary reinforcers (money, praise)."},
+  {u:3,t:"Shaping",d:"Reinforcing successive approximations of a desired behavior."},
+  {u:3,t:"Instinctive drift",d:"The tendency of animals to revert to biologically ingrained behaviors, interfering with conditioned behaviors."},
+  {u:3,t:"Learned helplessness",d:"The belief that one cannot control outcomes, leading to passive behavior; linked to depression (Seligman)."},
+  {u:3,t:"Fixed ratio schedule",d:"Reinforcement after a fixed number of responses; produces high, steady rate with pause after reward."},
+  {u:3,t:"Variable ratio schedule",d:"Reinforcement after an unpredictable number of responses; produces the highest and most persistent response rate (e.g., slot machines)."},
+  {u:3,t:"Fixed interval schedule",d:"Reinforcement after a fixed time period; produces scalloped pattern (slow start, speed up near reward time)."},
+  {u:3,t:"Variable interval schedule",d:"Reinforcement after unpredictable time intervals; produces slow, steady response rate."},
+  {u:3,t:"Social learning theory",d:"Bandura's theory: we learn by observing others; behavior is influenced by observation, imitation, and modeling."},
+  {u:3,t:"Observational learning",d:"Learning by watching others (models) and imitating their behavior."},
+  {u:3,t:"Vicarious conditioning",d:"Learning from the consequences experienced by others, rather than from direct experience."},
+  {u:3,t:"Modeling",d:"The process of observing and imitating a specific behavior."},
+  {u:3,t:"Insight learning",d:"Sudden realization of a problem's solution (the 'aha!' moment); demonstrated by Köhler's chimps."},
+  {u:3,t:"Latent learning",d:"Learning that occurs but is not demonstrated until there is an incentive to do so (Tolman's rats)."},
+  {u:3,t:"Cognitive maps",d:"Mental representations of spatial layouts learned through exploration."},
+  // UNIT 4
+  {u:4,t:"Dispositional attribution",d:"Explaining behavior by referring to internal characteristics of the person (personality, attitude)."},
+  {u:4,t:"Situational attribution",d:"Explaining behavior by referring to external circumstances."},
+  {u:4,t:"Optimistic explanatory style",d:"Attributing bad events to temporary, specific, external causes; linked to better mental health."},
+  {u:4,t:"Pessimistic explanatory style",d:"Attributing bad events to permanent, global, internal causes; linked to depression."},
+  {u:4,t:"Actor/observer bias",d:"Tendency to attribute our own behavior to situations but others' behavior to their dispositions."},
+  {u:4,t:"Fundamental attribution error",d:"Overestimating dispositional factors and underestimating situational factors when explaining others' behavior."},
+  {u:4,t:"Self-serving bias",d:"Attributing successes to internal factors and failures to external factors to protect self-esteem."},
+  {u:4,t:"Internal locus of control",d:"The belief that one controls one's own outcomes."},
+  {u:4,t:"External locus of control",d:"The belief that outcomes are controlled by outside forces (luck, fate)."},
+  {u:4,t:"Mere exposure effect",d:"The more we are exposed to something, the more we tend to like it."},
+  {u:4,t:"Self-fulfilling prophecy",d:"A belief or expectation that influences behavior in such a way that it causes the belief to come true."},
+  {u:4,t:"Social comparison",d:"Evaluating our opinions and abilities by comparing ourselves to others."},
+  {u:4,t:"Relative deprivation",d:"The perception that one is worse off relative to others in a reference group."},
+  {u:4,t:"Stereotype",d:"A generalized belief about a group of people."},
+  {u:4,t:"Prejudice",d:"An unjustified negative attitude toward a group and its members."},
+  {u:4,t:"Discrimination",d:"Unjustified negative behavior directed toward a group."},
+  {u:4,t:"Implicit attitudes",d:"Unconscious attitudes that influence behavior without our awareness."},
+  {u:4,t:"Just-world phenomenon",d:"The belief that people get what they deserve; victims are blamed for their misfortune."},
+  {u:4,t:"Out-group homogeneity bias",d:"Perceiving members of the out-group as more similar to each other than members of the in-group."},
+  {u:4,t:"In-group bias",d:"The tendency to favor and prefer members of one's own group."},
+  {u:4,t:"Ethnocentrism",d:"Judging other cultures by the standards of one's own culture, believing one's own culture is superior."},
+  {u:4,t:"Belief perseverance",d:"Maintaining a belief even after it has been discredited."},
+  {u:4,t:"Confirmation bias",d:"Searching for information that confirms one's preexisting beliefs while ignoring contradictory evidence."},
+  {u:4,t:"Cognitive dissonance",d:"The discomfort felt when holding two contradictory cognitions; motivates attitude change to reduce tension (Festinger)."},
+  {u:4,t:"Normative social influence",d:"Conforming to fit in and be liked; going along with the group to avoid rejection."},
+  {u:4,t:"Informational social influence",d:"Conforming because one believes others have accurate information; occurs in ambiguous situations."},
+  {u:4,t:"Central route to persuasion",d:"Persuasion through careful consideration of arguments; leads to lasting attitude change."},
+  {u:4,t:"Peripheral route to persuasion",d:"Persuasion through superficial cues (attractiveness, popularity); leads to temporary attitude change."},
+  {u:4,t:"Halo effect",d:"The tendency for a positive impression in one area to influence overall judgment."},
+  {u:4,t:"Foot-in-the-door technique",d:"Getting compliance with a large request by first getting compliance with a small one."},
+  {u:4,t:"Door-in-the-face technique",d:"Getting compliance with a smaller request after first making a large one that is refused."},
+  {u:4,t:"Conformity",d:"Adjusting behavior or thinking to match group standards (Asch's line studies)."},
+  {u:4,t:"Obedience",d:"Following direct orders from an authority figure (Milgram's shock studies)."},
+  {u:4,t:"Group polarization",d:"The tendency for group discussion to strengthen the average opinion of group members."},
+  {u:4,t:"Groupthink",d:"The drive for group consensus that overrides realistic appraisal of alternatives; suppresses dissent."},
+  {u:4,t:"Diffusion of responsibility",d:"In a group, individuals feel less personally responsible for taking action."},
+  {u:4,t:"Social loafing",d:"The tendency to exert less effort when working in a group than when working alone."},
+  {u:4,t:"Deindividuation",d:"Loss of self-awareness and self-restraint in group situations that foster arousal and anonymity."},
+  {u:4,t:"Social facilitation",d:"Improved performance on simple tasks in the presence of others."},
+  {u:4,t:"False consensus effect",d:"Overestimating the extent to which others share our beliefs and behaviors."},
+  {u:4,t:"Superordinate goals",d:"Shared goals that require cooperation among groups; can reduce intergroup conflict."},
+  {u:4,t:"Altruism",d:"Unselfish concern for the welfare of others."},
+  {u:4,t:"Bystander effect",d:"The tendency for individuals to be less likely to help when others are present (diffusion of responsibility)."},
+  {u:4,t:"Denial (defense mechanism)",d:"Refusing to accept reality (e.g., denying a serious diagnosis)."},
+  {u:4,t:"Displacement",d:"Redirecting emotions from the real target to a safer substitute."},
+  {u:4,t:"Projection",d:"Attributing one's own unacceptable thoughts or feelings to others."},
+  {u:4,t:"Rationalization",d:"Creating logical-sounding justifications for unacceptable behavior."},
+  {u:4,t:"Reaction formation",d:"Expressing the opposite of one's true feelings as a defense mechanism."},
+  {u:4,t:"Regression",d:"Reverting to behavior from an earlier stage of development under stress."},
+  {u:4,t:"Sublimation",d:"Channeling unacceptable impulses into socially acceptable activities."},
+  {u:4,t:"Unconditional positive regard",d:"Accepting and valuing a person regardless of their behavior; promotes growth (Rogers)."},
+  {u:4,t:"Self-actualizing tendency",d:"Rogers' belief that people are naturally motivated to grow and reach their full potential."},
+  {u:4,t:"Reciprocal determinism",d:"Bandura's concept: behavior, personal factors, and environment all influence each other."},
+  {u:4,t:"Self-efficacy",d:"One's belief in their own ability to perform a specific task successfully (Bandura)."},
+  {u:4,t:"Self-concept",d:"One's overall sense of who they are; includes thoughts and feelings about oneself."},
+  {u:4,t:"Self-esteem",d:"One's sense of self-worth; how positively one evaluates oneself."},
+  {u:4,t:"Big Five (OCEAN)",d:"Five major personality traits: Openness, Conscientiousness, Extraversion, Agreeableness, and Neuroticism."},
+  {u:4,t:"Openness",d:"Big Five trait: imagination, curiosity, and openness to new experiences."},
+  {u:4,t:"Conscientiousness",d:"Big Five trait: organization, dependability, and self-discipline."},
+  {u:4,t:"Extraversion",d:"Big Five trait: sociability, assertiveness, and positive emotionality."},
+  {u:4,t:"Agreeableness",d:"Big Five trait: cooperation, trust, and empathy."},
+  {u:4,t:"Neuroticism",d:"Big Five trait: tendency toward negative emotions; low neuroticism equals emotional stability."},
+  {u:4,t:"Factor analysis",d:"A statistical technique used to identify clusters of related items (e.g., used to identify personality traits)."},
+  {u:4,t:"Drive-reduction theory",d:"Motivation arises from biological needs that create drives to restore homeostasis."},
+  {u:4,t:"Homeostasis",d:"The tendency to maintain a stable internal environment (e.g., body temperature, blood sugar)."},
+  {u:4,t:"Arousal theory",d:"People are motivated to maintain an optimal level of arousal."},
+  {u:4,t:"Yerkes-Dodson Law",d:"Performance is best at moderate levels of arousal; too little or too much arousal hurts performance."},
+  {u:4,t:"Self-determination theory",d:"We are motivated by needs for competence, autonomy, and relatedness."},
+  {u:4,t:"Intrinsic motivation",d:"Motivation that comes from within; doing something for its own sake."},
+  {u:4,t:"Extrinsic motivation",d:"Motivation driven by external rewards or punishments."},
+  {u:4,t:"Incentive Theory",d:"We are motivated by external rewards (incentives) that pull us toward behaviors."},
+  {u:4,t:"Approach-approach conflict",d:"Choosing between two desirable options."},
+  {u:4,t:"Approach-avoidance conflict",d:"A single option that has both desirable and undesirable aspects."},
+  {u:4,t:"Avoidance-avoidance conflict",d:"Choosing between two undesirable options."},
+  {u:4,t:"Facial-feedback hypothesis",d:"Facial expressions can influence the emotions we feel (e.g., smiling can make you happier)."},
+  {u:4,t:"Broaden-and-build theory",d:"Positive emotions broaden thinking and help build lasting personal resources."},
+  {u:4,t:"Universality of emotional expression",d:"Basic emotions (anger, disgust, sadness, happiness, surprise, fear) are expressed and recognized similarly across cultures (Ekman)."},
+  {u:4,t:"Display rules",d:"Culturally specific norms about when and how emotions should be expressed."},
+  // UNIT 5
+  {u:5,t:"Health psychology",d:"A field studying how psychological, behavioral, and cultural factors affect physical health and illness."},
+  {u:5,t:"Eustress",d:"Positive stress that motivates and enhances performance."},
+  {u:5,t:"Distress",d:"Negative stress that is harmful and overwhelming."},
+  {u:5,t:"General adaptation syndrome",d:"Selye's three-stage response to stress: alarm (fight-or-flight), resistance (coping), exhaustion (resources depleted)."},
+  {u:5,t:"Fight-flight-or-freeze response",d:"The body's automatic physiological reaction to threat: prepares to fight, flee, or freeze."},
+  {u:5,t:"Tend-and-befriend theory",d:"Taylor's finding that women under stress often respond by nurturing and seeking social support."},
+  {u:5,t:"Problem-focused coping",d:"Coping by addressing the source of stress directly."},
+  {u:5,t:"Emotion-focused coping",d:"Coping by managing the emotional response to stress (meditation, deep breathing)."},
+  {u:5,t:"Positive Psychology",d:"A field focused on human flourishing: well-being, resilience, positive emotions, and strengths."},
+  {u:5,t:"Posttraumatic growth",d:"Positive psychological change following a struggle with highly challenging life circumstances."},
+  {u:5,t:"DSM",d:"The American Psychiatric Association's Diagnostic and Statistical Manual; the classification system for psychological disorders."},
+  {u:5,t:"ICD",d:"The World Health Organization's International Classification of Diseases; includes mental disorders."},
+  {u:5,t:"Biopsychosocial model",d:"Psychological disorders result from a combination of biological, psychological, and social factors."},
+  {u:5,t:"Diathesis-stress model",d:"Disorders result from a genetic predisposition (diathesis) triggered by environmental stress."},
+  {u:5,t:"ADHD",d:"Neurodevelopmental disorder characterized by inattention, hyperactivity, and impulsivity."},
+  {u:5,t:"Autism spectrum disorder",d:"Neurodevelopmental disorder characterized by difficulties in social communication and restricted, repetitive behaviors."},
+  {u:5,t:"Delusions",d:"False beliefs maintained despite clear evidence to the contrary (e.g., paranoid, grandiose)."},
+  {u:5,t:"Hallucinations",d:"Sensory perceptions (usually auditory) that occur without an actual external stimulus."},
+  {u:5,t:"Word salad",d:"Disorganized, incoherent speech that is a positive symptom of schizophrenia."},
+  {u:5,t:"Flat affect",d:"Reduced emotional expression; a negative symptom of schizophrenia."},
+  {u:5,t:"Dopamine hypothesis",d:"Schizophrenia is linked to excess dopamine activity in certain brain pathways."},
+  {u:5,t:"Major depressive disorder",d:"Characterized by persistent sadness, loss of interest, and other symptoms lasting at least 2 weeks."},
+  {u:5,t:"Persistent depressive disorder",d:"A chronic, milder form of depression lasting at least 2 years."},
+  {u:5,t:"Bipolar I",d:"Characterized by at least one full manic episode, often alternating with depressive episodes."},
+  {u:5,t:"Bipolar II",d:"Characterized by hypomanic and depressive episodes; no full manic episodes."},
+  {u:5,t:"Manic episode",d:"A period of abnormally elevated mood, energy, and activity lasting at least 1 week."},
+  {u:5,t:"Hypomanic episode",d:"A less severe form of mania that does not cause major functional impairment."},
+  {u:5,t:"Specific phobia",d:"An intense, irrational fear of a specific object or situation (e.g., acrophobia = heights)."},
+  {u:5,t:"Agoraphobia",d:"Fear and avoidance of situations where escape might be difficult during a panic attack."},
+  {u:5,t:"Panic disorder",d:"Recurrent unexpected panic attacks and persistent worry about future attacks."},
+  {u:5,t:"Social anxiety disorder",d:"Intense fear of social situations where one might be scrutinized or embarrassed."},
+  {u:5,t:"Generalized anxiety disorder",d:"Persistent, excessive worry about multiple areas of life lasting at least 6 months."},
+  {u:5,t:"OCD",d:"Obsessive-Compulsive Disorder: characterized by unwanted repetitive thoughts (obsessions) and/or actions (compulsions)."},
+  {u:5,t:"Hoarding disorder",d:"Persistent difficulty discarding possessions, resulting in clutter that impairs functioning."},
+  {u:5,t:"Dissociative identity disorder",d:"The presence of two or more distinct personality states; formerly called multiple personality disorder."},
+  {u:5,t:"Dissociative amnesia",d:"Memory loss for personal information or events not due to brain injury; may include fugue."},
+  {u:5,t:"PTSD",d:"Posttraumatic stress disorder: persistent re-experiencing, avoidance, and hyperarousal following a traumatic event."},
+  {u:5,t:"Anorexia nervosa",d:"Eating disorder: restriction of food intake due to distorted body image; intense fear of weight gain."},
+  {u:5,t:"Bulimia nervosa",d:"Eating disorder: cycles of binge eating followed by purging behaviors."},
+  {u:5,t:"Antisocial personality disorder",d:"Cluster B PD: pattern of disregard for and violation of the rights of others; lack of empathy and remorse."},
+  {u:5,t:"Borderline personality disorder",d:"Cluster B PD: instability in relationships, self-image, and emotions; fear of abandonment; impulsivity."},
+  {u:5,t:"Narcissistic personality disorder",d:"Cluster B PD: grandiosity, need for admiration, and lack of empathy."},
+  {u:5,t:"Therapeutic alliance",d:"The collaborative, trusting relationship between therapist and client; key predictor of therapy success."},
+  {u:5,t:"Deinstitutionalization",d:"The movement to shift mental health care from hospitals to community-based treatment."},
+  {u:5,t:"Free association",d:"Psychodynamic technique: the patient says whatever comes to mind to reveal unconscious thoughts."},
+  {u:5,t:"Dream interpretation",d:"Psychodynamic technique: analyzing dreams to uncover unconscious wishes and conflicts."},
+  {u:5,t:"Cognitive restructuring",d:"Cognitive therapy technique: identifying and challenging irrational or distorted thoughts."},
+  {u:5,t:"Systematic desensitization",d:"Behavioral therapy: pairing relaxation with gradually increasing exposure to a feared stimulus."},
+  {u:5,t:"Aversion therapy",d:"Behavioral therapy: associating an unwanted behavior with an unpleasant stimulus to reduce it."},
+  {u:5,t:"Token economy",d:"Behavioral therapy: using tokens (secondary reinforcers) to reward desired behaviors."},
+  {u:5,t:"Biofeedback",d:"Using electronic monitoring of bodily functions to help people learn to control physiological responses."},
+  {u:5,t:"Dialectical behavior therapy",d:"CBT-based therapy developed for borderline PD; emphasizes mindfulness and emotional regulation."},
+  {u:5,t:"Rational-emotive behavior therapy",d:"CBT approach by Ellis: challenges irrational beliefs using the ABC model (activating event, belief, consequence)."},
+  {u:5,t:"Person-centered therapy",d:"Humanistic therapy (Rogers): therapist provides empathy, genuineness, and unconditional positive regard to promote growth."},
+  {u:5,t:"Active listening",d:"A person-centered technique: fully attending, understanding, and responding to the client."},
+  {u:5,t:"Antidepressants",d:"Medications for depression (e.g., SSRIs) that increase serotonin and/or norepinephrine availability."},
+  {u:5,t:"Antianxiety medications",d:"Drugs (e.g., benzodiazepines) that reduce anxiety by enhancing GABA activity."},
+  {u:5,t:"Lithium",d:"A mood-stabilizing medication used to treat bipolar disorder."},
+  {u:5,t:"Antipsychotics",d:"Medications used to treat schizophrenia; block dopamine receptors."},
+  {u:5,t:"Tardive dyskinesia",d:"A side effect of long-term antipsychotic use: involuntary repetitive movements."},
+  {u:5,t:"Transcranial magnetic stimulation (TMS)",d:"A non-invasive brain stimulation technique using magnetic fields; used for depression."},
+  {u:5,t:"Electroconvulsive therapy (ECT)",d:"Biological treatment for severe depression: brief electrical current passed through the brain to induce a seizure; effective when other treatments fail."},
+];
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let mode = 'flashcard'; // 'flashcard' | 'mc'
+let activeUnit = 'all';
+let deck = [];
+let current = 0;
+let correct = 0;
+let wrong = 0;
+let missed = [];
+let fcRevealed = false;
+let mcAnswered = false;
+
+// ─── STORAGE HELPERS ─────────────────────────────────────────────────────────
+function saveKey() { return `appsych_${mode}_${activeUnit}`; }
+
+async function saveProgress() {
+  if (!window.storage) return;
+  try {
+    const state = { current, correct, wrong, missed: missed.map(t => t.t), deckOrder: deck.map(t => t.t) };
+    await window.storage.set(saveKey(), JSON.stringify(state));
+    flashSaveIndicator();
+  } catch(e) {}
+}
+
+async function loadProgress() {
+  if (!window.storage) return null;
+  try {
+    const result = await window.storage.get(saveKey());
+    return result ? JSON.parse(result.value) : null;
+  } catch(e) { return null; }
+}
+
+async function clearProgress() {
+  if (!window.storage) return;
+  try { await window.storage.delete(saveKey()); } catch(e) {}
+}
+
+function flashSaveIndicator() {
+  const el = document.getElementById('save-indicator');
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 1500);
+}
+
+// ─── DECK HELPERS ─────────────────────────────────────────────────────────────
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function buildDeck(unit) {
+  let pool = unit === 'all' ? [...ALL_TERMS] : ALL_TERMS.filter(t => t.u == unit);
+  return shuffle(pool);
+}
+
+function updateStats() {
+  document.getElementById('correct-count').textContent = correct;
+  document.getElementById('wrong-count').textContent = wrong;
+  document.getElementById('remaining-count').textContent = Math.max(0, deck.length - current);
+  const total = deck.length;
+  const done = Math.min(current, total);
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = `${done} / ${total}`;
+  document.getElementById('pct-text').textContent = pct + '%';
+}
+
+// ─── FLASHCARD MODE ───────────────────────────────────────────────────────────
+function showFlashcard() {
+  if (current >= deck.length) { showDone(); return; }
+  const card = deck[current];
+  fcRevealed = false;
+  document.getElementById('card-label').textContent = 'Term';
+  document.getElementById('card-term').textContent = card.t;
+  document.getElementById('card-def').textContent = card.d;
+  document.getElementById('card-def').classList.add('hidden');
+  document.getElementById('card-hint').classList.remove('hidden');
+  document.getElementById('card-unit-tag').textContent = 'Unit ' + card.u;
+  document.getElementById('reveal-btn').classList.remove('hidden');
+  document.getElementById('answer-btns').classList.add('hidden');
+  updateStats();
+}
+
+function revealFlashcard() {
+  if (fcRevealed) return;
+  fcRevealed = true;
+  document.getElementById('card-label').textContent = 'Definition';
+  document.getElementById('card-def').classList.remove('hidden');
+  document.getElementById('card-hint').classList.add('hidden');
+  document.getElementById('reveal-btn').classList.add('hidden');
+  document.getElementById('answer-btns').classList.remove('hidden');
+}
+
+function handleFC(gotIt) {
+  if (gotIt) { correct++; }
+  else { wrong++; missed.push(deck[current]); }
+  current++;
+  saveProgress();
+  showFlashcard();
+}
+
+// ─── MULTIPLE CHOICE MODE ────────────────────────────────────────────────────
+function getDistractors(correctTerm, count = 3) {
+  const pool = ALL_TERMS.filter(t => t.t !== correctTerm.t);
+  shuffle(pool);
+  return pool.slice(0, count);
+}
+
+function showMC() {
+  if (current >= deck.length) { showDone(); return; }
+  const card = deck[current];
+  mcAnswered = false;
+
+  document.getElementById('mc-question').textContent = card.d;
+  document.getElementById('mc-unit-tag').textContent = 'Unit ' + card.u;
+  document.getElementById('mc-feedback').className = 'mc-feedback';
+  document.getElementById('mc-feedback').textContent = '';
+  document.getElementById('mc-next-btn').classList.remove('visible');
+
+  const distractors = getDistractors(card);
+  const options = shuffle([card, ...distractors]);
+
+  const container = document.getElementById('mc-options');
+  container.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'mc-option';
+    btn.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt.t}</span>`;
+    btn.dataset.correct = (opt.t === card.t) ? '1' : '0';
+    btn.dataset.idx = i;
+    btn.addEventListener('click', () => handleMCAnswer(btn, card));
+    container.appendChild(btn);
+  });
+  updateStats();
+}
+
+async function fetchExplanation(isCorrect, chosenTerm, correctCard) {
+  const feedbackEl = document.getElementById('mc-feedback');
+  const bodyEl = document.getElementById('mc-feedback-body');
+  bodyEl.className = 'mc-feedback-body loading';
+  bodyEl.textContent = 'Generating explanation…';
+
+  const prompt = isCorrect
+    ? `A student studying AP Psychology just correctly identified that the definition below belongs to the term "${correctCard.t}". Give a 1-2 sentence explanation of why this is correct and a memorable tip or connection to help it stick. Be encouraging but concise.
+
+Definition: "${correctCard.d}"
+
+Reply in plain text only, no markdown, no bullet points.`
+    : `A student studying AP Psychology saw this definition and chose "${chosenTerm}" but the correct answer is "${correctCard.t}". In 2-3 sentences: briefly explain why "${chosenTerm}" is wrong and why "${correctCard.t}" is the right answer. Help them see the key difference. Be clear and concise.
+
+Definition: "${correctCard.d}"
+Correct term: "${correctCard.t}" — ${correctCard.d}
+
+Reply in plain text only, no markdown, no bullet points.`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await response.json();
+    const text = data.content?.map(c => c.text || '').join('') || 'No explanation available.';
+    bodyEl.className = 'mc-feedback-body';
+    bodyEl.textContent = text.trim();
+  } catch (e) {
+    bodyEl.className = 'mc-feedback-body';
+    bodyEl.textContent = isCorrect ? correctCard.d : `The correct answer is "${correctCard.t}": ${correctCard.d}`;
+  }
+}
+
+function handleMCAnswer(btn, correctCard) {
+  if (mcAnswered) return;
+  mcAnswered = true;
+  const allBtns = document.querySelectorAll('.mc-option');
+  allBtns.forEach(b => b.classList.add('disabled'));
+
+  const isCorrect = btn.dataset.correct === '1';
+  const chosenText = btn.querySelector('span:last-child').textContent;
+
+  btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+  const feedbackEl = document.getElementById('mc-feedback');
+  feedbackEl.innerHTML = `
+    <div class="mc-feedback-header ${isCorrect ? 'correct' : 'wrong'}">
+      ${isCorrect ? '✓ Correct!' : `✗ The correct answer was: ${correctCard.t}`}
+    </div>
+    <div class="mc-feedback-body loading" id="mc-feedback-body">Generating explanation…</div>
+  `;
+  feedbackEl.className = `mc-feedback ${isCorrect ? 'correct' : 'wrong'}`;
+
+  if (isCorrect) {
+    correct++;
+  } else {
+    wrong++;
+    missed.push(correctCard);
+    allBtns.forEach(b => { if (b.dataset.correct === '1') b.classList.add('show-correct'); });
+  }
+
+  document.getElementById('mc-next-btn').classList.add('visible');
+  current++;
+  saveProgress();
+  updateStats();
+
+  // Fetch AI explanation (non-blocking)
+  fetchExplanation(isCorrect, chosenText, correctCard);
+}
+
+function nextMC() {
+  if (current >= deck.length) { showDone(); return; }
+  showMC();
+}
+
+// ─── DONE SCREEN ──────────────────────────────────────────────────────────────
+function showDone() {
+  document.getElementById('flashcard-area').classList.add('hidden');
+  document.getElementById('mc-area').classList.add('hidden');
+  const doneEl = document.getElementById('done-screen');
+  doneEl.classList.add('show');
+  const total = correct + wrong;
+  const pct = total ? Math.round((correct / total) * 100) : 0;
+  document.getElementById('done-score').textContent = pct + '%';
+  document.getElementById('done-emoji').textContent = pct >= 80 ? '🎉' : pct >= 60 ? '💪' : '📚';
+  document.getElementById('done-sub').textContent = missed.length > 0
+    ? `You got ${correct} right and have ${missed.length} terms to keep studying.`
+    : 'You knew every term! Incredible work.';
+  document.getElementById('review-missed-btn').disabled = missed.length === 0;
+  document.getElementById('review-missed-btn').style.opacity = missed.length === 0 ? '0.4' : '1';
+  clearProgress();
+  updateStats();
+}
+
+function restart(useMissed) {
+  correct = 0; wrong = 0;
+  if (useMissed && missed.length > 0) {
+    deck = shuffle([...missed]);
+  } else {
+    deck = buildDeck(activeUnit);
+  }
+  missed = [];
+  current = 0;
+  document.getElementById('done-screen').classList.remove('show');
+  startMode();
+}
+
+// ─── MODE CONTROL ─────────────────────────────────────────────────────────────
+function startMode() {
+  document.getElementById('flashcard-area').classList.add('hidden');
+  document.getElementById('mc-area').classList.add('hidden');
+  document.getElementById('done-screen').classList.remove('show');
+
+  if (mode === 'flashcard') {
+    document.getElementById('flashcard-area').classList.remove('hidden');
+    showFlashcard();
+  } else {
+    document.getElementById('mc-area').classList.remove('hidden');
+    showMC();
+  }
+}
+
+async function switchMode(newMode) {
+  mode = newMode;
+  document.getElementById('btn-flashcard').classList.toggle('active', mode === 'flashcard');
+  document.getElementById('btn-mc').classList.toggle('active', mode === 'mc');
+  correct = 0; wrong = 0; missed = [];
+  await checkSavedProgress();
+}
+
+async function checkSavedProgress() {
+  const saved = await loadProgress();
+  const banner = document.getElementById('saved-banner');
+  if (saved && saved.current > 0 && saved.current < saved.deckOrder.length) {
+    const termMap = Object.fromEntries(ALL_TERMS.map(t => [t.t, t]));
+    document.getElementById('saved-text').textContent =
+      `📌 Saved: ${saved.current}/${saved.deckOrder.length} cards (${mode === 'flashcard' ? 'Flashcard' : 'Multiple Choice'} · ${activeUnit === 'all' ? 'All Units' : 'Unit ' + activeUnit})`;
+    banner.classList.remove('hidden');
+    window._pendingSaved = saved;
+  } else {
+    banner.classList.add('hidden');
+    window._pendingSaved = null;
+    deck = buildDeck(activeUnit);
+    current = 0;
+    startMode();
+  }
+}
+
+function resumeSaved() {
+  const saved = window._pendingSaved;
+  if (!saved) return;
+  const termMap = Object.fromEntries(ALL_TERMS.map(t => [t.t, t]));
+  deck = saved.deckOrder.map(t => termMap[t]).filter(Boolean);
+  current = saved.current;
+  correct = saved.correct;
+  wrong = saved.wrong;
+  missed = saved.missed.map(t => termMap[t]).filter(Boolean);
+  document.getElementById('saved-banner').classList.add('hidden');
+  window._pendingSaved = null;
+  startMode();
+}
+
+// ─── EVENT LISTENERS ──────────────────────────────────────────────────────────
+document.getElementById('btn-flashcard').addEventListener('click', () => switchMode('flashcard'));
+document.getElementById('btn-mc').addEventListener('click', () => switchMode('mc'));
+
+document.querySelectorAll('.unit-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    document.querySelectorAll('.unit-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeUnit = btn.dataset.unit;
+    correct = 0; wrong = 0; missed = [];
+    await checkSavedProgress();
+  });
+});
+
+document.getElementById('reveal-btn').addEventListener('click', revealFlashcard);
+document.getElementById('gotit-btn').addEventListener('click', () => handleFC(true));
+document.getElementById('missed-btn').addEventListener('click', () => handleFC(false));
+document.getElementById('mc-next-btn').addEventListener('click', nextMC);
+document.getElementById('restart-btn').addEventListener('click', () => restart(false));
+document.getElementById('review-missed-btn').addEventListener('click', () => restart(true));
+document.getElementById('resume-btn').addEventListener('click', resumeSaved);
+document.getElementById('clear-btn').addEventListener('click', async () => {
+  await clearProgress();
+  window._pendingSaved = null;
+  document.getElementById('saved-banner').classList.add('hidden');
+  deck = buildDeck(activeUnit);
+  current = 0; correct = 0; wrong = 0; missed = [];
+  startMode();
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (mode === 'flashcard') {
+    if (e.code === 'Space') { e.preventDefault(); if (!fcRevealed) revealFlashcard(); }
+    if (e.code === 'ArrowRight' && fcRevealed) handleFC(true);
+    if (e.code === 'ArrowLeft' && fcRevealed) handleFC(false);
+  } else {
+    const keys = {'Digit1':0,'Digit2':1,'Digit3':2,'Digit4':3};
+    if (keys[e.code] !== undefined && !mcAnswered) {
+      const btns = document.querySelectorAll('.mc-option');
+      if (btns[keys[e.code]]) btns[keys[e.code]].click();
+    }
+    if (e.code === 'Enter' && mcAnswered) nextMC();
+  }
+});
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+(async () => {
+  deck = buildDeck(activeUnit);
+  await checkSavedProgress();
+})();
+</script>
+</body>
+</html>
